@@ -48,7 +48,6 @@ UKF::UKF() {
   TODO:
 
   Complete the initialization. See ukf.h for other member properties.
-
   Hint: one or more values initialized above might be wildly off...
   */
 
@@ -62,13 +61,13 @@ UKF::UKF() {
 
 
   x_.fill(0.0);
-  previous_timestamp_ = 0;
+  time_us_ = 0;
 
   // define spreading parameter
   lambda_ = 3 - n_aug_;
 
   use_laser_ = true;
-  use_radar_ = false;
+  use_radar_ = true;
 }
 
 UKF::~UKF() {}
@@ -93,11 +92,12 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
   
   // Calculate elapsed time since last measurement
-  double dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0; //dt - expressed in seconds
+  double dt = (meas_package.timestamp_ - time_us_) / 1000000.0; //dt - expressed in seconds
   cout << "measurement received after " << dt << " seconds" << endl;
+  time_us_ = meas_package.timestamp_;
   
   
-  // Only do a prediction if the elapsed time is above 0.001. 
+  // Only do a prediction if the elapsed time is above 0.001s. 
   // Otherwise just do another measurement update since the time is basically the same.
   if (dt > 0.001)
   {
@@ -105,15 +105,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
   
   // Distinguish between Radar and Lidar measurements
+  // time of last update is only updated, if there really was a update
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_)
   {
     UpdateRadar(meas_package);
-    previous_timestamp_ = meas_package.timestamp_;
   }
   else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_)
   {
-    UpdateLidar(meas_package);
-    previous_timestamp_ = meas_package.timestamp_;    
+    UpdateLidar(meas_package);  
   }
 
 }
@@ -156,6 +155,9 @@ void UKF::Prediction(double delta_t) {
   //create square root matrix
   MatrixXd L = P_aug_.llt().matrixL();
 
+  cout << "Covariance augmented:" << endl << P_aug_ << endl;
+  cout << "L Matrix: " << endl << L << endl;
+
   //create augmented sigma points
   Xsig_aug_.col(0)  = x_aug_;
   for (int i = 0; i< n_aug_; i++)
@@ -164,7 +166,7 @@ void UKF::Prediction(double delta_t) {
     Xsig_aug_.col(i+1+n_aug_) = x_aug_ - sqrt(lambda_+n_aug_) * L.col(i);
   }
   
-
+  cout << "Sigma point : " << endl << Xsig_aug_ << endl;
 
   //create matrix with predicted sigma points as columns
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
@@ -214,16 +216,16 @@ void UKF::Prediction(double delta_t) {
     Xsig_pred_(4,i) = yawd_p;
   }
 
-
+  cout << "Sigma point predicted: " << endl << Xsig_pred_ << endl;
 
   //create vector for weights
   VectorXd weights_ = VectorXd(2*n_aug_+1);
   
-  //create vector for predicted state
-  VectorXd x_pred_ = VectorXd(n_x_);
+  //create vector for predicted state TODO: Remove
+  //VectorXd x_pred_ = VectorXd(n_x_);
 
-  //create covariance matrix for prediction
-  MatrixXd P_pred_ = MatrixXd(n_x_, n_x_);
+  //create covariance matrix for prediction TODO: Remove 
+  //MatrixXd P_pred_ = MatrixXd(n_x_, n_x_);
 
   // set weights
   double weight_0 = lambda_/(lambda_+n_aug_);
@@ -234,25 +236,24 @@ void UKF::Prediction(double delta_t) {
   }
 
   //predicted state mean
-  x_pred_.fill(0.0);
+  x_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
-    x_pred_ = x_pred_ + weights_(i) * Xsig_pred_.col(i);
+    x_ = x_ + weights_(i) * Xsig_pred_.col(i);
   }
 
   //predicted state covariance matrix
-  P_pred_.fill(0.0);
+  P_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
 
     // state difference
-    VectorXd x_diff = Xsig_pred_.col(i) - x_pred_;
-    cout << "x_diff " << endl << x_diff << endl;
+    VectorXd x_diff = Xsig_pred_.col(i) - x_;
     //angle normalization
     while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
     while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
-    P_pred_ = P_pred_ + weights_(i) * x_diff * x_diff.transpose() ;
+    P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
-  cout << "Predicted state: " << endl << x_pred_ << endl;
+  cout << "Predicted state: " << endl << x_ << endl;
 
 }
 
@@ -530,18 +531,18 @@ void UKF::InitState(MeasurementPackage meas_package) {
   // initialize state vector
   // as described in the Tips and Tricks section the state variable velocity can not be initialized
   //TODO: try other values for the last three elements
-  x_ << px, py, 4, 0, 0;
+  x_ << px, py, 5, 0, 0;
 
   // initialize process covariance matrix
   // TODO: try other values
-  P_ << 1, 0, 0, 0, 0,
-      0, 1, 0, 0, 0,
+  P_ << 0.1, 0, 0, 0, 0,
+      0, 0.1, 0, 0, 0,
       0, 0, 1, 0, 0,
       0, 0, 0, 1, 0,
       0, 0, 0, 0, 1;
 
   // save timestamp for use in next predict/measurement update
-  previous_timestamp_ = meas_package.timestamp_;
+  time_us_ = meas_package.timestamp_;
 
   // print out initialisation
   cout << "initialization finished" << endl;
