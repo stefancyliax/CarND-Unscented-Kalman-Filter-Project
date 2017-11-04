@@ -67,6 +67,9 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  // Flag for debugging purposes 
+  bool debugging_enabled_;
+
   /**
    * Constructor
    */
@@ -103,7 +106,14 @@ public:
   void UpdateRadar(MeasurementPackage meas_package);
 
   // Initialize the state using the first measurement
-  void InitState(MeasurementPackage meas_package);
+  void InitializeState(MeasurementPackage meas_package);
+
+  // Create Sigma Point Matrix
+  MatrixXd CreateSigmaPoints(void);
+
+  // Predict Sigma Point Matrix
+  MatrixXd PredictSigmaPoints(MatrixXd Xsig_aug_, double delta_t);
+
 };
 
 #endif /* UKF_H */
