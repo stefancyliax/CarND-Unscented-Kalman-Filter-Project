@@ -114,6 +114,9 @@ public:
   // Predict Sigma Point Matrix
   MatrixXd PredictSigmaPoints(MatrixXd Xsig_aug_, double delta_t);
 
+  // generate predicted state and covariance
+  void PredictMeanAndCovariance(MatrixXd Xsig_pred_);
+
 };
 
 #endif /* UKF_H */
