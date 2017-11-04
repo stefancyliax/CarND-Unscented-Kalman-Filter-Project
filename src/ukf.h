@@ -70,6 +70,16 @@ public:
   // Flag for debugging purposes 
   bool debugging_enabled_;
 
+  // NIS
+  double NIS_lidar_;
+  double NIS_radar_;
+
+  // init lidar measurement noise covariance matrix
+  MatrixXd R_lidar_;
+
+  // init radar measurement noise covariance matrix
+  MatrixXd R_radar_;
+
   /**
    * Constructor
    */
