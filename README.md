@@ -4,6 +4,7 @@
 The goal of this project was to build on the first project but now use a more sophisticated Kalman Filter. The Unscented Kalman Filter. The project uses the same LIDAR and RADAR data as the first one.
 
 In the end I was able to achieve a RMSE of:
+
 | State | RSME of Unscented Kalman Filter | RMSE of Extended Kalman Filter |
 |-------|---------------------------------|--------------------------------|
 | X     | __0.0701__                          | 0.0973                         |
