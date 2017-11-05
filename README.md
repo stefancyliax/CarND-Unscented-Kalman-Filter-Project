@@ -5,7 +5,7 @@ The goal of this project was to build on the first project but now use a more so
 
 In the end I was able to achieve a RMSE of:
 
-| State | RSME of Unscented Kalman Filter | RMSE of Extended Kalman Filter |
+| State | RSME of Unscented Kalman Filter (P7) | RMSE of Extended Kalman Filter (P6)|
 |-------|---------------------------------|--------------------------------|
 | X     | __0.0701__                          | 0.0973                         |
 | Y     | __0.0846__                          | 0.0855                         |
@@ -24,7 +24,7 @@ This allows for an algorithm that combines several noisy measurements and arrive
 
 ### Project Approach
 
-For P2 only the structure of the program were given. Because of the complex process of the Unscented Kalman Filter, quite a bit of programming and debugging were involved. P2 used the same [simulator](https://github.com/udacity/self-driving-car-sim/releases) as P1.
+For P7 only the structure of the program were given. Because of the complex process of the Unscented Kalman Filter, quite a bit of programming and debugging were involved. P7 used the same [simulator](https://github.com/udacity/self-driving-car-sim/releases) as P6.
 
 
 ### Basic Build Instructions
