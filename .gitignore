@@ -4,3 +4,5 @@
 # build files
 build/
 .vscode/.cmaketools.json
+
+\.vscode/
