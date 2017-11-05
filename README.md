@@ -1,7 +1,7 @@
 # Udacity Project 7: Unscented Kalman Filter
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-The goal of this project was to build on the first project but now use a more sophisticated Kalman Filter. The Unscented Kalman Filter. The project uses the same LIDAR and RADAR data as the first one.
+The goal of this project was to build on the [last project (P6)](https://github.com/stefancyliax/CarND-Extended-Kalman-Filter-Project) but now use a more sophisticated Kalman Filter. The Unscented Kalman Filter. The project uses the same LIDAR and RADAR data as the last one.
 
 In the end I was able to achieve a RMSE of:
 
